@@ -1,0 +1,444 @@
+#!/usr/bin/perl
+
+# presentps - make a presentation from PostScript input
+#
+# Author: Bob Diertens, <bobd@science.uva.nl>
+# Date: January 10, 2000
+# Version: 1.0
+# Date: August 19, 2003
+# Version: 1.1
+#    Adjusted for groff 1.18.2.
+# Date: November 6, 2003
+# Version: 1.2
+#    Bug in detecting EBEGIN before %%%%ENDTOP
+# Date: Februari 26, 2004
+# Version: 1.3
+#    Changed the View type for links to prevent changing of the fitting
+#    for wide-screens.
+#
+#    Copyright (C) 2001  Bob Diertens
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+# commandline
+sub usage {
+    die "usage: $0 [-l] [-lc ul|ur|ll|lr] [-p A4|letter]\n";
+}
+
+$sun = 0;
+$page = A4;
+$pageoption = 0;
+$links = 0;
+$linkscorner = "lr";
+while ($_ = $ARGV[0], /^-/) {
+    shift;
+    if (/^-S$/) {
+	$sun = 1;
+    } elsif (/^-p$/) {
+	$page = shift;
+	$pageoption = 1;
+    } elsif (/^-l$/) {
+	$links = 1;
+    } elsif (/^-lc$/) {
+	$linkscorner = shift;
+    } else {
+	&usage;
+    }
+}
+
+###
+
+$lastpage = 0;
+$hascontents = 0;
+
+$linkbw = 0;
+$linkred = 0;
+$linkgreen = 0;
+$linkblue = 0;
+
+$browsebw = 1;
+$browsered = 0;
+$browsegreen = 0;
+$browseblue = 0;
+
+sub PrintLink {
+    my $prev = shift;
+    my $next = shift;
+    my $x;
+    my $y;
+
+    if (! $links) {
+	return;
+    }
+    # ulx and uly should be related to the pagesize and cropping
+    if ($linkscorner eq "ul") {
+	$ulx = 58;
+	$uly = 16;
+    } elsif ($linkscorner eq "ur") {
+	$ulx = 740;
+	$uly = 16;
+    } elsif ($linkscorner eq "ll") {
+	$ulx = 58;
+	$uly = 538;
+    } elsif ($linkscorner eq "lr") {
+	$ulx = 740;
+	$uly = 538;
+    }
+    if ($prev) {
+	$tx = $ulx + 2.5;
+	$ty = $uly + 8;
+	$lrx = $ulx + 10;
+	$lry = $uly + 10;
+	print "/F0 8/Helvetica-Bold\@0 SF(<) $tx $ty Q\n";
+	print "[/Rect [$ulx $uly $lrx $lry]\n";
+	# round corners with Border do not work
+	print "/Border [0 0 $browsebw]\n";
+	# /Color does not work
+	print "/C [$browsered $browsegreen $browseblue]\n";
+	print "/Page $prev\n";
+	print "/Subtype /Link\n";
+	print "/View [/Fit]\n";
+	print "/ANN pdfmark\n";
+    }
+    $ulx += 10;
+    if (! $lastpage) {
+	$tx = $ulx + 2.5;
+	$ty = $uly + 8;
+	$lrx = $ulx + 10;
+	$lry = $uly + 10;
+	print "/F0 8/Helvetica-Bold\@0 SF(>) $tx $ty Q\n";
+	print "[/Rect [$ulx $uly $lrx $lry]\n";
+	print "/Border [0 0 $browsebw]\n";
+	print "/C [$browsered $browsegreen $browseblue]\n";
+	print "/Page $next\n";
+	print "/Subtype /Link\n";
+	print "/View [/Fit]\n";
+	print "/ANN pdfmark\n";
+    }
+    $ulx += 10;
+    if ($hascontents && ! $lastpage) {
+#        print "/F0 8/Times-Bold\@0 SF(i) 763.5 546.0 Q\n";
+	$tx = $ulx + 2.5;
+	$ty = $uly + 7.5;
+	$lrx = $ulx + 10;
+	$lry = $uly + 10;
+	print "/F0 8/Helvetica-Bold\@0 SF(c) $tx $ty Q\n";
+	print "[/Rect [$ulx $uly $lrx $lry]\n";
+	print "/Border [0 0 $browsebw]\n";
+	print "/C [$browsered $browsegreen $browseblue]\n";
+	print "/Dest /LinkIndex\n";
+	print "/Subtype /Link\n";
+	print "/View [/Fit]\n";
+	print "/ANN pdfmark\n";
+    }
+}
+
+sub PrintLinkIndex {
+    my $page = shift;
+    my $total = shift;
+
+    print "%%Page: $page $total\n";
+    print "BP\n";
+    print "%%EndPageSetup\n";
+    print "[/Dest /LinkIndex\n";
+    print "/Page $total\n";
+    print "/View [/Fit]\n";
+    print "/DEST pdfmark\n";
+    print "EP\n";
+}
+
+sub PrintTop {
+    foreach $l (@top) {
+	print $l;
+    }
+}
+
+sub PrintBottom {
+    print "gsave\n";
+    foreach $l (@bottom) {
+	print $l;
+    }
+    print "grestore\n";
+}
+
+# print a page (top bottom text)
+# when a pause is found, end page, make a new page with same contents
+# and continue
+
+$pagetotal = 0;
+$lastpagestart = 0;
+
+sub PrintPage {
+    my $pnr = shift;
+    my $nrpause = shift;
+    my $once = 0;
+    my $prev;
+    my $next;
+    my $dest;
+
+    $prev = $lastpagestart;
+    $pagetotal ++;
+    $lastpagestart = $pagetotal;
+    $next = $pagetotal + 1 + $nrpause;
+    $index[$pnr] = $pagetotal;
+    print "%%Page: $pnr $pagetotal\n";
+    PrintTop;
+#    PrintLink($prev, $next);
+    PrintBottom;
+    @t = ();
+    foreach $l (@text) {
+	if ($l =~ /^%%%%PAUSE$/) {
+	    PrintLink($prev, $next);
+	    print "EP\n";
+	    $pagetotal ++;
+	    print "%%Page: $pnr $pagetotal\n";
+	    PrintTop;
+#	    PrintLink($prev, $next);
+	    PrintBottom;
+	    foreach $tl (@t) {
+		print $tl;
+	    }
+	} elsif ($l =~ /^%%%%BEGINONCE$/) {
+	    $once = 1;
+	} elsif ($l =~ /^%%%%ENDONCE$/) {
+	    $once = 0;
+	} elsif ($l =~ /^%%%%CONTENTS$/) {
+	    print "[/Dest /LinkIndex\n";
+	    print "/Page $pagetotal\n";
+	    print "/View [/Fit]\n";
+	    print "/DEST pdfmark\n";
+	} elsif ($l =~ /^%%%%LINK (\S+) (\S+) (\S+) (\S+) (\S+)$/) {
+	    $llx = $1 / 1000;
+	    $lly = $2 / 1000;
+	    $urx = $llx + ($3 / 1000);
+	    $ury = $lly + ($4 / 1000);
+	    print "[/Rect [$llx $lly $urx $ury]\n";
+	    print "/Border [0 0 $linkbw]\n";
+	    print "/C [$linkred $linkgreen $linkblue]\n";
+	    $dest = $5;
+	    if ($dest =~ /^\d+$/) {
+		print "/Page $index[$dest]\n";
+	    } else {
+		print "/Dest /link$dest\n";
+	    }
+	    print "/Subtype /Link\n";
+	    print "/View [/Fit]\n";
+	    print "/ANN pdfmark\n";
+	} elsif ($l =~ /^%%%%LINKOPTIONS (\S+)$/) {
+	    $linkbw = $1;
+	} elsif ($l =~ /^%%%%LINKOPTIONS (\S+) (\S+) (\S+) (\S+)$/) {
+	    $linkbw = $1;
+	    $linkred = $2;
+	    $linkgreen = $3;
+	    $linkblue = $4;
+	} elsif ($l =~ /^%%%%DEST (\S+) (\S+)$/) {
+	    print "[/Dest /link$1\n";
+	    print "/Page $index[$2]\n";
+	    print "/View [/Fit]\n";
+	    print "/DEST pdfmark\n";
+	} else {
+	    if (! $once) {
+		push @t, $l;
+	    }
+	    print $l;
+	}
+    }
+    PrintLink($prev, $next);
+    print "EP\n";
+}
+
+# split page in top text and bottom and call PrintPage
+sub Page {
+    my $pln = shift;
+    my $nrpause = 0;
+
+    @top = ();
+    @text = ();
+    @bottom = ();
+    while ($l = shift @page) {
+	if ($l =~ / EBEGIN$/ || $l =~ /^EBEGIN$/) {
+	    $nl = shift @page;
+	    if ($nl =~ /^%%%%ENDTOP$/) {
+		shift @page;
+		last;
+	    } else {
+		push @top, $l;
+		push @top, $nl;
+		push @top, shift @page;
+	    }
+	} else {
+	    push @top, $l;
+	}
+    }
+    while ($l = shift @page) {
+	if ($l =~ / EBEGIN$/ || $l =~ /^EBEGIN$/) {
+	    $nl = shift @page;
+	    if ($nl =~ /^%%%%PAUSE$/) {
+		push @text, $nl;
+		shift @page;
+		$nrpause ++;
+	    } elsif ($nl =~ /^%%%%BEGINONCE$/) {
+		push @text, $nl;
+		shift @page;
+	    } elsif ($nl =~ /^%%%%ENDONCE$/) {
+		push @text, $nl;
+		shift @page;
+	    } elsif ($nl =~ /^%%%%BEGINBOT$/) {
+		shift @page;
+		last;
+	    } else {
+		push @text, $l;
+		push @text, $nl;
+		push @text, shift @page;
+	    }
+	} elsif ($l =~ /^EP$/) { # there is no BEGINBOT
+	    last;
+	} else {
+	    push @text, $l;
+	}
+    }
+    while ($l = shift @page) {
+	if ($l =~ /^EP$/) {
+	    last;
+	}
+	push @bottom, $l;
+    }
+    $pln =~ /%%Page: (\d+) /;
+    $pagenr = $1;
+    PrintPage($pagenr, $nrpause);
+}
+
+###
+
+# read header and find pagelength
+
+@pre = ();
+while (<>) {
+    if (/^%%Page:/) {
+	$nextln = $_;
+	last;
+    } elsif (/^%%Pages:/) {
+	push @pre, "%%Pages: (Atend)\n";
+    } elsif (/^%%%%HASCONTENTS/) {
+	$hascontents = 1;
+    } elsif (/\/PL (\S+) /) {
+	$pagelength = $1;
+	push @pre, $_;
+    } else {
+	push @pre, $_;
+    }
+}
+
+if (defined $pagelength && ! $pageoption) {
+    if ($pagelength == 792) {
+	$page = "letter";
+    } elsif ($pagelength == 841.89) {
+	$page = "A4";
+    }
+}
+
+# set crop sizes
+# default for A4 on 1024x768
+$w = 720;
+$h = 540;
+$ox = 54; # 0.75 inch
+$oy = 290;
+if ($sun) { # A4 on 1152x900
+    $h = 562;
+    $oy = 260;
+}
+if ($page ne "A4") { # assume letter
+    $oy -= 50;
+}
+
+# print header
+$cropdone = 0;
+$skip = 0;
+foreach (@pre){
+    if ($skip) {
+	$skip --;
+	next;
+    }
+    if (!$cropdone && /^%%EndComments/) {
+	print "%%%%BeginFeature: PageSize w", ${w} + $ox, "h", ${h} + $oy, "\n";
+	print "<</PageSize[", $w + $ox, " ", $h + $oy, "]>> setpagedevice\n";
+	print "%%EndFeature\n";
+	print "[/CropBox [$ox $oy ", $w + $ox, " ", $h + $oy, "]\n";
+	print "/PAGES pdfmark\n";
+	$cropdone = 1;
+	print "[/PageMode /FullScreen\n";
+	print "/DOCVIEW pdfmark\n";
+	print;
+    } elsif (/^%%BeginFeature: \*PageSize Default/) {
+	$skip = 2;
+    } else {
+	print;
+    }
+}
+
+# read pages and straighten them
+# print a page when found
+while (<>) {
+    $pageln = $nextln;
+    @page = ();
+    while (<>) {
+	if (/^EEND /) {
+	    push @page, "EEND\n";
+	    s/^EEND //;
+	    redo;
+	} elsif (/^EEND\//) {
+	    push @page, "EEND\n";
+	    s/^EEND//;
+	    redo;
+	} elsif (/ ((\d|\.)+) ((\d|\.)+) EBEGIN$/) {
+	    $d1 = $1; $d2 = $3;
+	    s/ $d1 $d2 EBEGIN$//;
+	    push @page, $_;
+	    push @page, "$d1 $d2 EBEGIN\n";
+	} elsif (/^((\d|\.)+) ((\d|\.)+) EBEGIN$/) {
+	    $d1 = $1; $d2 = $3;
+	    s/^$d1 $d2 EBEGIN$//;
+	    # push @page, $_;
+	    push @page, "$d1 $d2 EBEGIN\n";
+	} elsif (/ EP$/) {
+	    s/ EP$//;
+	    push @page, $_;
+	    push @page, "EP\n";
+	} elsif (/^%%Trailer$/) {
+	    $lastpage = 1;
+	    $nextln = $_;
+	    last;
+	} elsif (/^%%Page:/) {
+	    $nextln = $_;
+	    last;
+	} else {
+	    push @page, $_;
+	}
+    }
+    Page($pageln);
+    if ($nextln =~ /^%%Trailer$/) {
+	last;
+    }
+}
+
+#$pagetotal ++;
+#PrintLinkIndex("i", $pagetotal);
+
+# read an print trailer
+print $nextln;
+print "%%Pages: $pagetotal\n";
+while (<>) {
+    print;
+}

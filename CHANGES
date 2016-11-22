@@ -1,0 +1,42 @@
+Changes since varsion 2.2
+-------------------------
+
+o Changed '.INITCOLOR yellow' into '.DEFAULTCOLOR yellow' in demo.rof.
+o Repaired bug in presentps which messed things up.
+o Adjusted smile.epsf to prevent problem with acroread version 5.x.
+o Adjusted presentps for viewing problems with wide-screens.
+
+Changes since version 2.1
+-------------------------
+
+o Bug in presentps, which resulted in problems with ps2pdf.
+o Mentioning of INITCOLOR instead of DEFAULTCOLOR in demo.rof.
+o acroread version 5.0 stumbled on smile.epsf.
+
+Changes since version 2.0
+-------------------------
+
+o  Adjusted the story on loading of the piclink macros.
+   They can't be loaded with the -m option, because then they
+   are not preprocessed by gpic.
+o  Adjusted presentps so that additional PageSize settings added
+   by grops since version 1.18.2 of groff, are filtered out.
+
+Changes since version 1.0
+-------------------------
+
+o  Footers are put on an exact location.
+o  TITLE and SUBTITLE set the strings title and subtitle.
+o  Added the picture linking macros for making links inside a picture.
+   A demonstration is also added.
+o  Presentps has an option (-lc) for indicating the corner to put the links.
+o  The END macro sets the margins.
+o  A demonstration of a sidebar as header.
+o  All variables used in the macros start with gp- in order to prevent
+   clashes.
+o  Colors are now implemented with .defcolor and \m[...]. Color changes can
+   still be made with \*[colXXX] but this is deprecated.
+o  More control over titles and subtitles by means of the macros TITLEFORMAT,
+   SUBTITLECOLOR, and SUBTITLEFORMAT, in addition to TITLECOLOR which now
+   only sets the color for titles.
+o  Added the macros DEFAULTCOLOR and INITCOLOR.

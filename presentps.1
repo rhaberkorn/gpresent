@@ -1,0 +1,42 @@
+.TH PRESENTPS 1 "January 28, 2001"
+.SH NAME
+presentps \- post-processor for the groff presentation macros
+.SH SYNOPSIS
+.B presentps
+[\|-l\|] [\|-lc \fIcorner\fP\|] [\|-p \fIsize\fP\|]
+.SH DESCRIPTION
+.B Presentps
+manipulates the PostScript output of
+.BR groff (1)
+made with the use of the presentation macros
+.RB ( groff_present (1)).
+The presentation macros put comments in the PostScript upon which
+.B presentps
+acts.
+.SH OPTIONS
+.TP
+.B \-l
+Links to the previous, next, and contents page are created in the
+lower right corners of the pages.
+.TP
+.BI \-lc " corner"
+Specifies in which corner the links must be put.
+.I corner
+can be ul (upper left), ur (upper right), ll (lower left), or lr
+(lower right).
+.br
+Default: lr
+.TP
+.BI \-p " size"
+Forces the size of the pages to
+.IR size .
+Normally the size is detected in the input.
+.I size
+can be either A4 or letter.
+.SH "SEE ALSO"
+.BR groff (1),
+.BR groff_present (7),
+.BR ps2pdf (1),
+.BR acroread (1)
+.SH AUTHOR
+Bob Diertens, <bobd@science.uva.nl>

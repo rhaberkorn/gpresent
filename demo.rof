@@ -1,0 +1,683 @@
+.fam H
+.ft H
+.de HEADER
+.ft H
+.sp -0.1i \" PSPIC takes to much space here
+.PSPIC -L smile.epsf 0.5i
+.sp -0.1i
+\l'\\n[.l]u'\h'-\\n[.l]u'
+.br
+.mk R1
+.sp -0.4i
+\h'0.6i'\s+8Demonstration of Presentations with Groff\
+ and Acroread\s-8
+.sp |\\n(R1u
+.br
+..
+.de FOOTER
+.ft H
+\l'\\n[.l]u'\h'-\\n[.l]u'
+.br
+.tl '''%'
+..
+.TITLE "The making of this demo"
+.DS CB
+.PS
+linethick=1.5i
+arrowwid=0.08
+boxwid=1.2i
+IN: box "demo.rof" invis
+MA: box "\m[blue]present.tmac\m[]" invis at IN + (1.5i,0)
+    arrow down from IN.s
+GR: box "groff"
+    arrow from MA.sw to GR.ne
+    arrow down from GR.s
+PP: box "\*[colblue]presentps\*[colP]"
+    arrow down
+PS: box "ps2pdf"
+    arrow down
+AR: box "acroread"
+    move to (GR.x + 2.0i, GR.y)
+    "groff -p -e -t -mm -m\*[colblue]present\*[colP] demo.rof > demo.pps" ljust
+    move to (PP.x + 2.0i, PP.y)
+    "\*[colblue]presentps\*[colP] -l < demo.pps > demo.ps" ljust
+    move to (PS.x + 2.0i, PS.y)
+    "ps2pdf demo.ps" ljust
+    move to (AR.x + 2.0i, AR.y)
+    "acroread demo.pdf" ljust
+.PE
+.DE
+.SK
+.TITLE "Headers"
+You can make headers by defining a macro HEADER
+.VERBON 22 16
+\&.de HEADER
+\&.sp 0.2i
+\&.PSPIC -L smile.eps 0.5i
+\&.sp -0.1i
+\\l'\\\\n[.l]u'\\h'-\\\\n[.l]u'
+\&.br
+\&.mk R1
+\&.sp -0.4i
+\\h'0.6i'\\s+8Demonstration of Presentations with Groff\\
+ and Acroread\\s-8
+\&.sp |\\\\n(R1u
+\&.br
+\&..
+.VERBOFF
+.SK
+.TITLE "Footers"
+You can make footers by defining a macro FOOTER
+.VERBON 22 16
+\&.de FOOTER
+\\l'\\\\n[.l]u'\\h'-\\\\n[.l]u'
+\&.br
+\&.tl '''%'
+\&..
+.VERBOFF
+.SK
+.TITLE "Titles"
+The TITLE macro makes a centered, dark blue title in a big font.
+.VERBON 22 16
+\&.TITLE "Titles"
+.VERBOFF
+.SUBTITLE "Subtitles"
+The SUBTITLE macro makes a indented, dark blue subtitle in a big font but smaller than a title.
+.VERBON 22 16
+\&.SUBTITLE "Subtitles"
+.VERBOFF
+.SUBTITLE "Titlecolor"
+You can change the color of the titles and subtitles with the macro
+TITLECOLOR.
+.VERBON 22 16
+\&.TITLECOLOR red
+.VERBOFF
+.SK
+.TITLE "Pausing"
+You can show a list and pause after each item with the use of
+the PAUSE macro.
+.BL
+.LI
+list item 1
+.PAUSE
+.LI
+list item 2
+.PAUSE
+.LI
+list item 3
+.LE 1
+.P
+The list is created with
+.VERBON 22 16
+\&.BL
+\&.LI
+list item 1
+\&.PAUSE
+\&.LI
+list item 2
+\&.PAUSE
+\&.LI
+list item 3
+\&.LE 1
+.VERBOFF
+.SK
+.TITLE "Pausing (cont.)"
+You can also use the PAUSE macro in a picture.
+.PAUSE
+.DS CB
+.PS
+linethick=1.5
+arrowwid=0.08
+boxwid=1.3i
+boxht=0.7i
+ellipsewid=1.3i
+ellipseht=0.7i
+ellipse "document"
+.PAUSE
+arrow
+box "PIC"
+.PAUSE
+arrow
+box "TBL/EQN" "(optional)" \
+    dashed
+.PAUSE
+arrow
+box "GROFF"
+.PAUSE
+arrow
+ellipse "typesetter"
+.PE
+.DE
+.P
+The picture is created with
+.2C
+.VERBON 22 16
+\&.DS CB
+\&.PS
+linethick=1.5
+arrowwid=0.08
+boxwid=1.3i
+boxht=0.7i
+ellipsewid=1.3i
+ellipseht=0.7i
+ellipse "document"
+\&.PAUSE
+arrow
+box "PIC"
+\&.PAUSE
+arrow
+box "TBL/EQN" "(optional)" \\
+    dashed
+\&.PAUSE
+arrow
+box "GROFF"
+\&.PAUSE
+arrow
+ellipse "typesetter"
+\&.PE
+\&.DE
+.VERBOFF
+.1C
+.SK
+.TITLE "Pausing (cont.)
+You can also use the PAUSE macro in a equation.
+.PAUSE
+.DS I
+.EQ
+gfont BI
+G(z) ~mark =~ e sup{ln ~ G(z)}
+~=~ exp left (
+sum from k>=1 {S sub k z sup k} over k right )
+~=~ prod from k>=1 e sup {S sub k z sup k /k}
+.EN
+.DE
+.DS I
+.PAUSE
+.EQ
+lineup = left ( 1 + S sub 1 z +
+{S sub 1 sup 2 z sup 2} over 2! + ... right ) ~
+left ( 1 + {S sub 2 z sup 2} over 2
++ {S sub 2 sup 2 z sup 4} over {2 sup 2 cdot 2! }
++ ... right ) ~ ...
+.EN
+.DE
+.DS I
+.PAUSE
+.EQ
+lineup = sum from m>=0 left (
+sum from
+pile {k sub 1 ,k sub 2 ,..., k sub m >=0
+above
+k sub 1 +2k sub 2 + ... +mk sub m =m}
+{S sub 1 sup {k sub 1}} over {1 sup k sub 1 k sub 1 !} ~
+{S sub 2 sup {k sub 2}} over {2 sup k sub 2 k sub 2 !} ~
+...
+{S sub m sup {k sub m}} over {m sup k sub m k sub m !}
+right ) ~ z sup m
+.EN
+.DE
+The equation is created with
+.VERBON 22 16
+\&.DS I
+\&.EQ
+gfont BI
+G(z) ~mark =~ e sup{ln ~ G(z)}
+~=~ exp left (
+sum from k>=1 {S sub k z sup k} over k right )
+~=~ prod from k>=1 e sup {S sub k z sup k /k}
+\&.EN
+\&.DE
+\&.DS I
+\&.PAUSE
+\&.EQ
+lineup = left ( 1 + S sub 1 z +
+{S sub 1 sup 2 z sup 2} over 2! + ... right ) ~
+left ( 1 + {S sub 2 z sup 2} over 2
++ {S sub 2 sup 2 z sup 4} over {2 sup 2 cdot 2! }
++ ... right ) ~ ...
+\&.EN
+\&.DE
+\&.DS I
+\&.PAUSE
+\&.EQ
+lineup = sum from m>=0 left (
+sum from
+pile {k sub 1 ,k sub 2 ,..., k sub m >=0
+above
+k sub 1 +2k sub 2 + ... +mk sub m =m}
+{S sub 1 sup {k sub 1}} over {1 sup k sub 1 k sub 1 !} ~
+{S sub 2 sup {k sub 2}} over {2 sup k sub 2 k sub 2 !} ~
+\&...
+{S sub m sup {k sub m}} over {m sup k sub m k sub m !}
+right ) ~ z sup m
+\&.EN
+\&.DE
+.VERBOFF
+.SK
+.TITLE "Pausing (cont.)"
+You can also use the PAUSE macro in a table.
+.DS CB
+.TS
+tab(#);
+cfHB s s
+c c c
+n n n.
+AT&T Common Stock
+Year#Price#Dividend
+_
+.PAUSE
+1984#15-20#$1.20
+.PAUSE
+5#19-25#1.20
+.PAUSE
+6#21-28#1.20
+.PAUSE
+7#20-36#1.20
+.TE
+.DE
+Box, allbox and vertical lines are not drawn at the right moment, so
+it is better not to use them.
+.P
+The table is created with
+.2C
+.VERBON 22 16
+\&.DS CB
+\&.TS
+tab(#);
+cfHB s s
+c c c
+n n n.
+AT&T Common Stock
+Year#Price#Dividen
+_
+\&.PAUSE
+1984#15-20#$1.20
+\&.PAUSE
+5#19-25#1.20
+\&.PAUSE
+6#21-28#1.20
+\&.PAUSE
+7#20-36#1.20
+\&.TE
+\&.DE
+.VERBOFF
+.1C
+.SK
+.TITLE "Colors"
+You can change the foreground color with the macro COLOR.
+.VERBON 22 16
+\&.COLOR red
+.VERBOFF
+.COLOR red
+changes the foreground color to red and
+.VERBON 22 16
+\&.COLOR P
+.VERBOFF
+.COLOR P
+changes it to the previous color.
+.P
+If followed by arguments, then only the
+.VERBON 22 16
+\&.COLOR red "first argument is in red" ,
+.VERBOFF
+.COLOR red "first argument is in red" ,
+and the optional second argument is in the current color.
+.P
+To set the foreground color at the start of the presentation, you
+can use the macro INITCOLOR
+.VERBON 22 16
+\&.INITCOLOR yellow
+.VERBOFF
+To set the default foreground color for text, headers, and footers,
+you can use the macro DEFAULTCOLOR
+.VERBON 22 16
+\&.DEFAULTCOLOR yellow
+.VERBOFF
+.BR Note :
+DEFAULTCOLOR and INITCOLOR should only be used after the definition
+of the HEADER macro (if you use one).
+.SK
+.TITLE "Colors (cont.)
+You can define a color with the macro DEFCOLOR.
+.VERBON 22 16
+\&.DEFCOLOR brown 0.64 0.16 0.16
+.VERBOFF
+defines the color
+.DEFCOLOR brown 0.64 0.16 0.16
+.COLOR brown BROWN
+\&.
+.br
+The arguments 2, 3, 4 represent the values for the colors red, green, and
+blue. The values must be between 0 and 1.
+.P
+You can also change the foreground color by embedding a
+\\\v'0.2m'*\v'-0.2m'[colX] at the desired point to set the color to X.
+If X is P, the color is changed to the previous color.
+.VERBON 22 16
+current \\*[colblue]blue \\*[colred]red \\*[colP]previous
+.VERBOFF
+.ds savedfgcolor \*[gp-col@cur]
+becomes
+.br
+current \*[colblue]blue \*[colred]red \*[colP]previous
+.br
+.COLOR \*[savedfgcolor]
+Another \\\v'0.2m'*\v'-0.2m'[colP] for setting the foreground color
+to the current one does not work, as it did in a previous version of gpresent.
+.P
+.BR Note :
+the usage of \\\v'0.2m'*\v'-0.2m'[colX] is deprecated, use \\m[..] instead.
+.DEFCOLOR mybg 0.5 0.5 0.8
+.BACKGROUND Solid mybg
+.SK
+.TITLE "Predefined Colors"
+The following colors are defined by their name in lowercase:
+.br
+.in +1i
+.COLOR red RED
+.COLOR green GREEN
+.COLOR blue BLUE
+.COLOR cyan CYAN
+.COLOR magenta MAGENTA
+.COLOR yellow YELLOW
+.COLOR white WHITE
+.COLOR black BLACK
+.br
+.in -1i
+.P
+The following colors are defined by their name in lowercase followed
+by the number in the left column:
+.in +1i
+9
+.COLOR red9 RED
+.COLOR green9 GREEN
+.COLOR blue9 BLUE
+.COLOR cyan9 CYAN
+.COLOR magenta9 MAGENTA
+.COLOR yellow9 YELLOW
+.COLOR gray9 GRAY
+.br
+8
+.COLOR red8 RED
+.COLOR green8 GREEN
+.COLOR blue8 BLUE
+.COLOR cyan8 CYAN
+.COLOR magenta8 MAGENTA
+.COLOR yellow8 YELLOW
+.COLOR gray8 GRAY
+.br
+7
+.COLOR red7 RED
+.COLOR green7 GREEN
+.COLOR blue7 BLUE
+.COLOR cyan7 CYAN
+.COLOR magenta7 MAGENTA
+.COLOR yellow7 YELLOW
+.COLOR gray7 GRAY
+.br
+6
+.COLOR red6 RED
+.COLOR green6 GREEN
+.COLOR blue6 BLUE
+.COLOR cyan6 CYAN
+.COLOR magenta6 MAGENTA
+.COLOR yellow6 YELLOW
+.COLOR gray6 GRAY
+.br
+5
+.COLOR red5 RED
+.COLOR green5 GREEN
+.COLOR blue5 BLUE
+.COLOR cyan5 CYAN
+.COLOR magenta5 MAGENTA
+.COLOR yellow5 YELLOW
+.COLOR gray5 GRAY
+.br
+4
+.COLOR red4 RED
+.COLOR green4 GREEN
+.COLOR blue4 BLUE
+.COLOR cyan4 CYAN
+.COLOR magenta4 MAGENTA
+.COLOR yellow4 YELLOW
+.COLOR gray4 GRAY
+.br
+3
+.COLOR red3 RED
+.COLOR green3 GREEN
+.COLOR blue3 BLUE
+.COLOR cyan3 CYAN
+.COLOR magenta3 MAGENTA
+.COLOR yellow3 YELLOW
+.COLOR gray3 GRAY
+.br
+2
+.COLOR red2 RED
+.COLOR green2 GREEN
+.COLOR blue2 BLUE
+.COLOR cyan2 CYAN
+.COLOR magenta2 MAGENTA
+.COLOR yellow2 YELLOW
+.COLOR gray2 GRAY
+.br
+1
+.COLOR red1 RED
+.COLOR green1 GREEN
+.COLOR blue1 BLUE
+.COLOR cyan1 CYAN
+.COLOR magenta1 MAGENTA
+.COLOR yellow1 YELLOW
+.COLOR gray1 GRAY
+.br
+.in -1i
+.TITLECOLOR white
+.ds savedfgcolor \*[gp-col@cur]
+.COLOR yellow
+.BACKGROUND Solid blue
+.SK
+.TITLE "Backgrounds"
+.SUBTITLE "Solid"
+This background is created with
+.VERBON 22 16
+\&.BACKGROUND Solid blue
+.VERBOFF
+.BACKGROUND GradX blue blue5
+.SK
+.TITLE "Backgrounds (cont.)"
+.SUBTITLE "Gradient X"
+This background is created with
+.VERBON 22 16
+\&.BACKGROUND GradX blue blue5
+.VERBOFF
+.BACKGROUND GradY blue blue5
+.SK
+.TITLE "Backgrounds (cont.)"
+.SUBTITLE "Gradient Y"
+This background is created with
+.VERBON 22 16
+\&.BACKGROUND GradY blue blue5
+.VERBOFF
+.BACKGROUND GradAngle blue blue5 100 45
+.SK
+.TITLE "Backgrounds (cont.)"
+.SUBTITLE "Gradient with Angle"
+This background is created with
+.VERBON 22 16
+\&.BACKGROUND GradAngle blue blue5 100 45
+.VERBOFF
+.COLOR \*[savedfgcolor]
+.TITLECOLOR blue4
+.BACKGROUND None
+.SK
+.TITLE "Backgrounds (cont.)"
+.SUBTITLE "None"
+You can get rid of backgrounds with
+.VERBON 22 16
+\&.BACKGROUND None
+.VERBOFF
+.SK
+.TITLE "Filled Rectangles"
+Since we have the routines for filling the background, we might as well
+use them for filled rectangles.
+.P
+The rectangles below are created with:
+.FILL 4i 4i 5i 5i Solid red
+.FILL 4.5i 4.5i 5.5i 5.5i GradX green green6
+.FILL 5i 5i 6i 6i GradY blue blue6
+.FILL 5.5i 5.5i 6.5i 6.5i GradAngle yellow yellow6 30 45
+.VERBON 22 16
+\&.FILL 4i 4i 5i 5i Solid red
+\&.FILL 4.5i 4.5i 5.5i 5.5i GradX green green6
+\&.FILL 5i 5i 6i 6i GradY blue blue6
+\&.FILL 5.5i 5.5i 6.5i 6.5i GradAngle yellow yellow6 30 45
+.VERBOFF
+.SK
+.TITLE "Blocks"
+You can create blocks anywhere with the macros BLOCKS an BLOCKE.
+.br
+.BLOCKS 1i 4i
+\&.BLOCKS 1i 4i
+.br
+This is block 1, with x-position 1i and y-position 4i.
+.br
+\&.BLOCKE
+.BLOCKE
+.PAUSE
+.BLOCKS 4i 3i
+\&.BLOCKS 4i 3i
+.br
+This is block 2, with x-position 4i and y-position 3i.
+.br
+\&.BLOCKE
+.BLOCKE
+.PAUSE
+.BLOCKS 4i 5i 2i
+\&.BLOCKS 4i 5i 2i
+.br
+This is block 3, with x-position 4i, y-position 5i, and line length 2i.
+.br
+\&.BLOCKE
+.BLOCKE
+.PAUSE
+After a block, you return to the position before the block.
+.SK
+.TITLE "Blocks (cont.)"
+If the first argument of BLOCKS is \fConce\fP, the block only appears once.
+You can use this in combination with the PAUSE macro.
+.BL
+.LI
+list item 1
+.BLOCKS once
+.DL
+.LI
+subitem 1.1
+.LI
+subitem 1.2
+.LE 1
+.BLOCKE
+.PAUSE
+.LI
+list item 2
+.BLOCKS once
+.DL
+.LI
+subitem 2.1
+.LI
+subitem 2.2
+.LE 1
+.BLOCKE
+.PAUSE
+.LI
+list item 3
+.LE 1
+The above is created with
+.2C
+.VERBON 22 16
+\&.BL
+\&.LI
+list item 1
+\&.BLOCKS once
+\&.DL
+\&.LI
+subitem 1.1
+\&.LI
+subitem 1.2
+\&.LE 1
+\&.BLOCKE
+\&.PAUSE
+\&.LI
+list item 2
+\&.BLOCKS once
+\&.DL
+\&.LI
+subitem 2.1
+\&.LI
+subitem 2.2
+\&.LE 1
+\&.BLOCKE
+\&.PAUSE
+\&.LI
+list item 3
+\&.LE 1
+.VERBOFF
+.1C
+.SK
+.TITLE "Links"
+You can make a link with the macro LINK.
+.LINKCOLOR blue7 1 blue
+.br
+The link
+.LINK L1 "next page"
+is made with
+.VERBON 22 16
+\&.LINK L1 "next page"
+.VERBOFF
+.SK
+.TITLE "Links (cont.)"
+.DESTINATION L1
+On this page a destination for the link on the previous page was created
+with the macro DESTINATION.
+.VERBON 22 16
+\&.DESTINATION L1
+.VERBOFF
+You can change the color for the links with the macro LINKCOLOR.
+.VERBON 22 16
+\&.LINKCOLOR blue7
+.VERBOFF
+A second argument specifies the borderwidth of the link.
+.VERBON 22 16
+\&.LINKCOLOR blue7 1
+.VERBOFF
+A third argument specifies the bordercolor.
+.VERBON 22 16
+\&.LINKCOLOR blue7 1 blue
+.VERBOFF
+.SK
+.TITLE "Contents"
+You can make a contents page with the macro END.
+The contents consist of all the titles.
+They are turned into links that go back to the top of the page at
+which the titles appear.
+.P
+You can add something to the contents with the macro ADDCONTENT.
+.ADDCONTENT "This is added to the contents"
+.VERBON 22 16
+\&.ADDCONTENT "This is added to the contents"
+.VERBOFF
+.SK
+.TITLE "Browse"
+You can browse through a presentation with the possibilities provided
+by acroread.
+.br
+If \*[colblue]presentps\*[colP] is given the option -l, there are buttons
+added in the right lower corner.
+These button are:
+.VL 8 4
+.LI <
+top of previous page
+.LI >
+top of next page
+.LI c
+contents page
+.LE 1
+.END

@@ -1,0 +1,102 @@
+.fam H
+.ft H
+.de HEADER
+.ft H
+.sp -0.1i \" PSPIC takes to much space here
+.PSPIC -L smile.epsf 0.5i
+.sp -0.1i
+\l'\\n[.l]u'\h'-\\n[.l]u'
+.br
+.mk R1
+.sp -0.4i
+\h'0.6i'\s+8Demonstration of Presentations with Groff\
+ and Acroread\s-8
+.sp |\\n(R1u
+.br
+..
+.de FOOTER
+.ft H
+\l'\\n[.l]u'\h'-\\n[.l]u'
+.br
+.tl '''%'
+..
+.LINKCOLOR red 1 blue
+.TITLE "The making of this demo"
+.DS CB
+.PS
+linethick=1.5i
+arrowwid=0.08
+boxwid=1.2i
+ellipsewid=1.2i
+down
+PL: box "\m[blue]piclink.tmac\m[]" invis width 1.5i
+    move down 0.25i
+X:  [
+IN: box "piclink.rof" invis
+PIC:box "\m[blue]picture\m[]" invis with .n at IN.s width 0.8i height 0.3i
+    move down 0.1i
+    ]
+    line dotted from X.nw to X.ne to X.se to X.sw to X.nw
+MA: box "present.tmac" invis width 1.5i at X.IN + (2i,0)
+    arrow down from X.s
+GR: box "groff"
+    arrow down
+    move down 0.1i
+    box "." "." "." invis
+    arrow from MA.sw to GR.ne + (-0.3i,0)
+    line from PL.s to X.n
+LINK(L1,X.PIC)
+LINK(L2,PL)
+    move to (GR.x + 1.3i, GR.y)
+    "groff -p -mm -mpresent \m[blue]piclink.tmac\m[] piclink.rof > piclink.pps" ljust
+.PE
+.DE
+Clicking on a blue rectangle will take you to the linked page.
+.P
+.B Note :
+The piclink macros are not loaded with a -m option.
+That is because they need to processed by gpic to define the PIC macro.
+.SK
+.TITLE "PIC source"
+.DESTINATION L1
+.VERBON 0 14
+\&.PS
+linethick=1.5i
+arrowwid=0.08
+boxwid=1.2i
+ellipsewid=1.2i
+down
+PL: box "\\m[blue]piclink.tmac\\m[]" invis width 1.5i
+    move down 0.25i
+X:  [
+IN: box "piclink.rof" invis
+PIC:box "\\m[blue]picture\\m[]" invis with .n at IN.s width 0.8i height 0.3i
+    move down 0.1i
+    ]
+    line dotted from X.nw to X.ne to X.se to X.sw to X.nw
+MA: box "present.tmac" invis width 1.5i at X.IN + (2i,0)
+    arrow down from X.s
+GR: box "groff"
+    arrow down
+    move down 0.1i
+    box "." "." "." invis
+    arrow from MA.sw to GR.ne + (-0.3i,0)
+    line from PL.s to X.n
+\m[blue]LINK(L1,X.PIC)\m[]
+\m[blue]LINK(L2,PL)\m[]
+    move to (GR.x + 1.3i, GR.y)
+    "groff -p -mm -mpresent \\m[blue]piclink.tmac\\m[] piclink.rof > piclink.pps" ljust
+\&.PE
+.VERBOFF
+.SK
+.TITLE PIC LINK macros
+.DESTINATION L2
+The PIC macro
+.VERBON 22 16
+LINK(name,object)
+.VERBOFF
+makes a link from \f[CR]object\f[] to the destination \f[CR]name\f[]
+defined somewhere with the macro DESTINATION.
+.P
+\f[CR]object\f[] must be an indication of a box, circle, or ellipse,
+but the link itself will always be a rectangle.

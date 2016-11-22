@@ -1,0 +1,321 @@
+.TH GROFF_PRESENT 7 "September 4, 2002"
+.SH NAME
+groff_present \- groff presentation macros
+.SH SYNOPSIS
+groff \-mm \-m\fBpresent\fP [\|\fIoptions\fP ...\|] [\|\fIfiles\fP ...\|]
+.SH DESCRIPTION
+The presentation macros are based upon the groff mm macros.
+They are useful for making presentations with the use of a beamer,
+but without use of the
+.B PAUSE
+macro, they can also be used for making slides.
+.P
+The post-processor
+.BR presentps (1)
+is needed for manipulation of the PostScript output of
+.BR groff (1)
+in order to make it a presentation.
+.SH USAGE
+A presentation can be made with the following commands.
+.RS
+% groff -mm -mpresent file.rof > file.pps
+.br
+% presentps -l < file.pps > file.ps
+.br
+% ps2pdf file.ps
+.br
+% acroread file.pdf
+.br
+.RE
+.P
+Slides can be made with the following command.
+.RS
+% groff -P-l -mm -mpresent file.rof > file.ps
+.RE
+.SS Macros
+.TP
+.BI ADDCONTENT " string"
+Adds
+.I string
+to the contents which can be made with the macro
+.BR END .
+.TP
+.BI BACKGROUND " args"
+Defines the background to be used.
+This macro should be invoked before the page is started.
+A description of
+.I args
+is given below.
+.br
+Default: None
+.RS
+.TP
+.BI Solid " color"
+Makes a solid background.
+.TP
+.BI GradX " color1 color2"
+Makes a gradient background in the x-direction from
+.I color1
+to
+.IR color2 .
+.TP
+.BI GradY " color1 color2"
+Makes a gradient background in the y-direction from
+.I color1
+to
+.IR color2 .
+.TP
+.BI GradAngle " color1 color2 steps angle"
+Makes a gradient background in a direction with an angle from
+.I color1
+to
+.IR color2 .
+.TP
+.B None
+No background is made.
+.RE
+.TP
+.BI BLOCKS " \fR[once] [\fPx \fR[\fPy \fR[\fPlength\fR]\fP"
+A block is started with the upper right corner at
+.IR x , y .
+By omission of y and/or x the current coordinates are used.
+If
+.I length
+is given, the line length is set to this.
+If the first option is
+.B once
+this block only appears once, so after a
+.B PAUSE
+this block does not show up anymore.
+.TP
+.B BLOCKE
+Ends a block.
+The position is reset to the position before the block was started.
+.TP
+.BI COLOR " color \fR[\fParg1 \fR[\fParg2\fR]]\fP"
+Sets the foreground color.
+.I color
+must be the name of a predefined color or a color defined
+with the macro
+.BR DEFCOLOR .
+If
+.I color
+is P, the foreground color is set to the previous color.
+If
+.I arg1
+is given then only this is printed in the specified color.
+If
+.I arg2
+is given, this is put directly after
+.I arg1
+in the current color.
+.br
+Default: black
+(DEFCOLOR is mapped onto the groff request .defcolor.)
+.TP
+.BI DEFAULTCOLOR " color
+Sets the default color for headers, footers, and text.
+Use this macro after defining 
+.BR HEADER .
+.br
+Default: black
+.TP
+.BI DEFCOLOR " name red green blue"
+Defines a color
+.I name
+with the values for red, green, and blue represented by the other
+arguments.
+These values must be between 0 and 1.
+.br
+See also subsection
+.BR "Predefined colors" .
+.TP
+.BI DESTINATION " name"
+Defines a destination
+.I name
+to which a link can be made.
+.TP
+.B END
+Generates a contents page build up from the titles specified
+with the macro
+.B TITLE
+and additional text specified by the macro
+.BR ADDCONTENT .
+.TP
+.BI FILL " x1 y1 x2 y2 args"
+Since the routines are there anyway for making the backgrounds,
+we might as well use them for filling rectangles.
+For a description of
+.I args
+see macro
+.BR BACKGROUND .
+.TP
+.B FOOTER
+If this macro is defined it is called at the bottom of the page.
+.TP
+.BI FOOTERSIZE " n"
+Sets the size of the footer to
+.IR n v.
+For technical reasons the minimum is 2.
+.br
+Default: 3
+.TP
+.B HEADER
+If this macro is defined it is called at the top of the page.
+.TP
+.BI INITCOLOR " color
+Sets the color for text. Should be used at the start of the presentation
+instead of
+.BI COLOR .
+.br
+Default: black
+.TP
+.BI LINK " name string"
+Makes a link from
+.I string
+to the destination
+.IR name .
+.TP
+.BI LINKCOLOR " color \fR[\fPborder-width \fR[\fPborder-color\fR]]\fP"
+Sets the foreground color for the text of a link.
+Optionally the width and the color of the border for the link can
+also be set.
+.br
+Default: blue7 0 black
+.TP
+.BI MARGIN " left \fR[\fPright\fR]\fP"
+Sets the left and right margins.
+If
+.I right
+is not given, it is set equal to the left margin.
+.br
+Default: 0.75i
+.TP
+.B PAUSE
+Pauses the presentation at this point.
+.TP
+.BI SUBTITLE " string"
+Makes a subtitle in a way that can be specified with
+.B SUBTITLEFORMAT
+in a big font (smaller than with
+.BR TITLE )
+in a color that can be specified with the macro
+.BR SUBTITLECOLOR .
+.TP
+.BI SUBTITLECOLOR " name"
+Sets the color of subtitles to
+.IR name .
+.br
+Default: blue4
+.TP
+.B SUBTITLEFORMAT L \fR|\fP C \fR|\fP R \fR|\fP I \fR[\fP\fIn\fP\fR]\fP
+Sets the format for subtitles.
+.br
+Default: I
+.RS
+.TP
+.B L
+left adjusted
+.TP
+.B C
+centered
+.TP
+.B R
+right adjusted
+.TP
+.BI I " \fR[\fPn\fR]\fP
+indented with indentation
+.I n
+if given (default 0.5i)
+.RE
+.TP
+.BI TITLE " string"
+Makes a title in a way that can be specified with the macro
+.B TITLEFORMAT
+in a big font in a color that can be specified with the macro
+.BR TITLECOLOR .
+.TP
+.BI TITLECOLOR " name"
+Sets the color of titles to
+.IR name .
+.br
+Default: blue4
+.TP
+.B TITLEFORMAT L \fR|\fP C \fR|\fP R \fR|\fP I \fR[\fP\fIn\fP\fR]\fP
+Sets the format for titles.
+.br
+Default: C
+.RS
+.TP
+.B L
+left adjusted
+.TP
+.B C
+centered
+.TP
+.B R
+right adjusted
+.TP
+.BI I " \fR[\fPn\fR]\fP
+indented with indentation
+.I n
+if given (default 0.5i)
+.RE
+.SS Strings
+.TP
+.BI \e*[col name ]
+Changes the foreground color to
+.IR name .
+If
+.I name
+is P the foreground color is set to the previous color.
+.br
+.BR Deprecated :
+use
+.BI \em[ name ]
+and
+.B \em[]
+instead.
+.TP
+.B \e*[subtitle]
+Holds the last subtitle.
+It is reset by the macro
+.BR TITLE .
+.TP
+.B \e*[title]
+Holds the last title.
+.SS "Predefined colors"
+The following colors are predefined:
+.RS
+red green blue cyan magenta yellow white black
+.RE
+The following colors are also predefined:
+.RS
+.RI red n
+.RI green n
+.RI blue n
+.RI cyan n
+.RI magenta n
+.RI yellow n
+.RI gray n
+.RE
+Where
+.I n
+is a number between 1 and 9 representing the intensity of the color.
+.LP
+.BR groff (1)
+has some predefined colors of its own, which can also be used.
+.SH FILES
+.TP
+.B .../groff/.../tmac/m.tmac
+.TP
+.B .../groff/.../tmac/present.tmac
+.SH "SEE ALSO"
+.BR groff (1),
+.BR groff_mm (7),
+.BR presentps (1),
+.BR ps2pdf (1),
+.BR acroread (1),
+.BR groff_piclink (7)
+.SH AUTHOR
+Bob Diertens, <bobd@science.uva.nl>

@@ -1,0 +1,39 @@
+.TH GROFF_PICLINK 7 "September 4, 2002"
+.SH NAME
+groff_piclink \- groff picture linking macros
+.SH SYNOPSIS
+groff \fB\-p\fP \-mm \-mpresent \fBpiclink.tmac\fP [\|\fIoptions\fP ...\|] [\|\fIfiles\fP ...\|]
+.SH DESCRIPTION
+The picture linking macros are to be used with the presentation macros.
+They make it possible to make a link in a picture (made with pic) to
+another slide in the presentation.
+.PP
+The piclink macros cannot be loaded with a \-m option, since it
+needs to be processed by
+.BR gpic (1)
+in order to define the PIC macro.
+.SH USAGE
+.SS "PIC macros
+.TP
+.BI LINK( name , object )
+Makes a link from
+.I object
+to the destination
+.IR name .
+.I object
+must be an indication of a box, circle, or ellipse.
+For technical reasons, the link itself is always a rectangle.
+.SH FILES
+.TP
+.B .../groff/.../tmac/m.tmac
+.TP
+.B .../groff/.../tmac/present.tmac
+.TP
+.B piclink.tmac
+.SH "SEE ALSO"
+.BR groff (1),
+.BR groff_mm (7),
+.BR groff_present (7),
+.BR pic (1)
+.SH AUTHOR
+Bob Diertens, <bobd@science.uva.nl>
