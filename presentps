@@ -393,8 +393,17 @@ foreach (@pre){
 while (<>) {
     $pageln = $nextln;
     @page = ();
+    my $embedded = 0;
     while (<>) {
-	if (/^EEND /) {
+	if (/^%%BeginDocument:/) {
+	    $embedded++;
+	    push @page, $_;
+	} elsif ($embedded) {
+	    if (/^%%EndDocument/) {
+		$embedded--;
+	    }
+	    push @page, $_;
+	} elsif (/^EEND /) {
 	    push @page, "EEND\n";
 	    s/^EEND //;
 	    redo;
