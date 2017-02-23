@@ -201,6 +201,8 @@ in a big font (smaller than with
 .BR TITLE )
 in a color that can be specified with the macro
 .BR SUBTITLECOLOR .
+.B SUBTITLEFONT
+can be used to change the font of subtitles.
 .TP
 .BI SUBTITLECOLOR " name"
 Sets the color of subtitles to
@@ -229,11 +231,19 @@ indented with indentation
 if given (default 0.5i)
 .RE
 .TP
+.BI SUBTITLEFONT " font"
+Sets the font of subtitles to
+.IR font .
+.br
+Default: R
+.TP
 .BI TITLE " string"
 Makes a title in a way that can be specified with the macro
 .B TITLEFORMAT
 in a big font in a color that can be specified with the macro
 .BR TITLECOLOR .
+.B TITLEFONT
+can be used to change the font of titles.
 .TP
 .BI TITLECOLOR " name"
 Sets the color of titles to
@@ -261,6 +271,12 @@ indented with indentation
 .I n
 if given (default 0.5i)
 .RE
+.TP
+.BI TITLEFONT " font"
+Sets the font of titles to
+.IR font .
+.br
+Default: R
 .SS Strings
 .TP
 .BI \e*[col name ]

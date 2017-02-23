@@ -458,9 +458,11 @@ ps: def
 .ds gp-title
 .ds gp-subtitle
 .ds gp-title*format C
+.ds gp-title*font R
 .nr gp-title*defindent 0.5i
 .nr gp-title*indent \n[gp-title*defindent]
 .ds gp-subtitle*format I
+.ds gp-subtitle*font R
 .nr gp-subtitle*defindent 0.5i
 .nr gp-subtitle*indent \n[gp-subtitle*defindent]
 .\"usage: TITLECOLOR color
@@ -475,6 +477,10 @@ ps: def
 .   el .nr gp-title*indent \\n[gp-title*defindent]
 .\}
 ..
+.\"usage: TITLEFONT font
+.de TITLEFONT
+.ds gp-title*font \\$1
+..
 .\"usage: TITLE title
 .de TITLE
 .SP 0.25i
@@ -483,7 +489,9 @@ ps: def
 .if '\\*[gp-title*format]'L' 'in 0
 .if '\\*[gp-title*format]'R' 'rj 99
 .if '\\*[gp-title*format]'I' 'in \\n[gp-title*indent]u
+.ft \\*[gp-title*font]
 .COLOR \\*[gp-title*color] "\\$*"
+.ft
 .if '\\*[gp-title*format]'C' 'ce 0
 .if '\\*[gp-title*format]'L' 'in
 .if '\\*[gp-title*format]'R' 'rj 0
@@ -506,6 +514,10 @@ ps: def
 .   el .nr gp-subtitle*indent \\n[gp-subtitle*defindent]
 .\}
 ..
+.\"usage: SUBTITLEFONT font
+.de SUBTITLEFONT
+.ds gp-subtitle*font \\$1
+..
 .\"usage: SUBTITLE title
 .de SUBTITLE
 .SP 0.2i
@@ -514,7 +526,9 @@ ps: def
 .if '\\*[gp-subtitle*format]'L' 'in 0
 .if '\\*[gp-subtitle*format]'R' 'rj 99
 .if '\\*[gp-subtitle*format]'I' 'in \\n[gp-subtitle*indent]u
+.ft \\*[gp-subtitle*font]
 .COLOR \\*[gp-subtitle*color] "\\$*
+.ft
 .if '\\*[gp-subtitle*format]'C' 'ce 0
 .if '\\*[gp-subtitle*format]'L' 'in
 .if '\\*[gp-subtitle*format]'R' 'rj 0
